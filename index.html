@@ -1,40 +1,80 @@
-<head>
-  <style>
-    body {
-      margin: 0;
-    }
-  </style>
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
 
-  <script src="//unpkg.com/d3-dsv"></script>
-  <script src="//unpkg.com/index-array-by"></script>
-  <script src="//unpkg.com/globe.gl"></script>
+      #globeViz {
+        position: relative;
+      }
 
-  <style>
-    body {
-      margin: 0;
-    }
+      .floating-box {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        background-color: #f8f9fa;
+        border: 1px solid rgba(0, 0, 0, 0.125);
+        border-radius: 0.25rem;
+        padding: 1rem;
+      }
 
-    #globeViz {
-      position: relative;
-    }
+      .form-select {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
 
-    #tripFilter {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 9999;
-    }
-  </style>
-</head>
+      .form-check {
+        position: relative;
+        display: block;
+        padding-left: 1.25rem;
+      }
 
-<body>
-  <select id="tripFilter">
-    <option value="">All Trips</option>
-  </select>
-  <div id="globeViz"></div>
+      .form-check-input {
+        position: absolute;
+        margin-top: 0.3rem;
+        margin-left: -1.25rem;
+      }
 
-  <script src="viz.js"></script>
-  <script>
-    initializeGlobeVisualization();
-  </script>
-</body>
+      .form-check-label {
+        margin-bottom: 0;
+        vertical-align: top;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="globeViz"></div>
+
+    <div class="floating-box">
+      <select id="tripFilter" class="form-select mb-3">
+        <option value="">All Trips</option>
+      </select>
+      <div class="btn-group mb-3">
+        <button id="prevButton" class="btn btn-secondary">Previous</button>
+        <button id="nextButton" class="btn btn-secondary">Next</button>
+      </div>
+    </div>
+
+    <script src="//unpkg.com/d3-dsv"></script>
+    <script src="//unpkg.com/index-array-by"></script>
+    <script src="//unpkg.com/globe.gl"></script>
+
+    <script src="viz.js"></script>
+    <script>
+      initializeGlobeVisualization();
+    </script>
+  </body>
+</html>

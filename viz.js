@@ -1,5 +1,52 @@
 const MAP_CENTER = { lat: 46.8570237, lng: -71.5097226, altitude: 0.8 };
 const OPACITY = 0.4;
+const nextButton = document.getElementById("nextButton");
+const prevButton = document.getElementById("prevButton");
+
+let currentSegmentIndex = 0;
+let filteredRoutesByTrip = [];
+
+const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
+  myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
+  // Center camera on selected route
+  const route = filteredRoutesByTrip[currentSegmentIndex];
+  const src = route.srcAirport;
+  const dst = route.dstAirport;
+  const midpoint = {
+    lat: (src.lat + dst.lat) / 2,
+    lng: (src.lng + dst.lng) / 2,
+    altitude: 1,
+  };
+  myGlobe.pointOfView(midpoint, 2000);
+
+  // Disable prevButton if there is no previous segment
+  if (currentSegmentIndex === 0) {
+    prevButton.disabled = true;
+  } else {
+    prevButton.disabled = false;
+  }
+
+  // Disable nextButton if there is no next segment
+  if (currentSegmentIndex === filteredRoutesByTrip.length - 1) {
+    nextButton.disabled = true;
+  } else {
+    nextButton.disabled = false;
+  }
+};
+
+nextButton.addEventListener("click", () => {
+  if (currentSegmentIndex < filteredRoutesByTrip.length - 1) {
+    currentSegmentIndex++;
+    handleSegmentChange(filteredRoutesByTrip, myGlobe);
+  }
+});
+
+prevButton.addEventListener("click", () => {
+  if (currentSegmentIndex > 0) {
+    currentSegmentIndex--;
+    handleSegmentChange(filteredRoutesByTrip, myGlobe);
+  }
+});
 
 const initializeGlobeVisualization = () => {
   loadAirportsAndRoutes()
@@ -23,6 +70,7 @@ const initializeGlobeVisualization = () => {
 const createGlobeVisualization = () =>
   Globe()(document.getElementById("globeViz"))
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-night.jpg")
+    .backgroundImageUrl("//unpkg.com/three-globe/example/img/night-sky.png")
     .arcLabel((d) => `${d.trip}: ${d.srcIata} &#8594; ${d.dstIata}`)
     .arcStartLat((d) => d.srcAirport.lat)
     .arcStartLng((d) => d.srcAirport.lng)
@@ -129,11 +177,11 @@ const addTripFilterEventListener = (myGlobe, routes) => {
   const tripFilterSelect = document.getElementById("tripFilter");
   tripFilterSelect.addEventListener("change", () => {
     const selectedTrip = tripFilterSelect.value;
-    const filteredRoutesByTrip = selectedTrip
+    filteredRoutesByTrip = selectedTrip
       ? routes.filter((d) => d.trip === selectedTrip)
       : routes;
-
-    myGlobe.arcsData(filteredRoutesByTrip);
+    currentSegmentIndex = 0;
+    handleSegmentChange(filteredRoutesByTrip, myGlobe);
   });
 };
 
