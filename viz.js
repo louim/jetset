@@ -14,9 +14,13 @@ const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
   const route = filteredRoutesByTrip[currentSegmentIndex];
   const src = route.srcAirport;
   const dst = route.dstAirport;
+  const interpolated = d3.geoInterpolate(
+    [src.lng, src.lat],
+    [dst.lng, dst.lat]
+  )(0.5);
   const midpoint = {
-    lat: (src.lat + dst.lat) / 2,
-    lng: (src.lng + dst.lng) / 2,
+    lat: interpolated[1],
+    lng: interpolated[0],
     altitude: 1,
   };
   myGlobe.pointOfView(midpoint, 2000);
