@@ -2,9 +2,11 @@ const MAP_CENTER = { lat: 46.8570237, lng: -71.5097226, altitude: 0.8 };
 const OPACITY = 0.4;
 const nextButton = document.getElementById("nextButton");
 const prevButton = document.getElementById("prevButton");
+const toggleButton = document.getElementById("toggleButton");
 
 let currentSegmentIndex = 0;
 let filteredRoutesByTrip = [];
+let showAllRoutes = false;
 
 const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
   myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
@@ -34,18 +36,34 @@ const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
   }
 };
 
+const handleToggleChange = (myGlobe) => {
+  showAllRoutes = !showAllRoutes;
+  if (showAllRoutes) {
+    myGlobe.arcsData(filteredRoutesByTrip);
+    nextButton.disabled = true;
+    prevButton.disabled = true;
+  } else {
+    myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
+    handleSegmentChange(filteredRoutesByTrip, myGlobe);
+  }
+};
+
 nextButton.addEventListener("click", () => {
-  if (currentSegmentIndex < filteredRoutesByTrip.length - 1) {
+  if (!showAllRoutes && currentSegmentIndex < filteredRoutesByTrip.length - 1) {
     currentSegmentIndex++;
     handleSegmentChange(filteredRoutesByTrip, myGlobe);
   }
 });
 
 prevButton.addEventListener("click", () => {
-  if (currentSegmentIndex > 0) {
+  if (!showAllRoutes && currentSegmentIndex > 0) {
     currentSegmentIndex--;
     handleSegmentChange(filteredRoutesByTrip, myGlobe);
   }
+});
+
+toggleButton.addEventListener("click", () => {
+  handleToggleChange(myGlobe);
 });
 
 const initializeGlobeVisualization = () => {
@@ -59,6 +77,7 @@ const initializeGlobeVisualization = () => {
       const byIata = indexAirportsByIata(filteredAirports);
 
       const filteredRoutes = mapRoutesToAirports(routes, byIata);
+      filteredRoutesByTrip = filteredRoutes;
 
       renderGlobeVisualization(myGlobe, filteredAirports, filteredRoutes);
     })
@@ -181,7 +200,13 @@ const addTripFilterEventListener = (myGlobe, routes) => {
       ? routes.filter((d) => d.trip === selectedTrip)
       : routes;
     currentSegmentIndex = 0;
-    handleSegmentChange(filteredRoutesByTrip, myGlobe);
+    if (showAllRoutes) {
+      myGlobe.arcsData(filteredRoutesByTrip);
+      nextButton.disabled = true;
+      prevButton.disabled = true;
+    } else {
+      handleSegmentChange(filteredRoutesByTrip, myGlobe);
+    }
   });
 };
 
