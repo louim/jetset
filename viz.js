@@ -126,7 +126,12 @@ const loadAirportsAndRoutes = async () => {
     .then((res) => res.text())
     .then((d) => d3.csvParseRows(d, airportParse));
 
-  const routesPromise = fetch("data.csv")
+  // If we have a dataUrl query parameter, use it to fetch the data.
+  // Otherwise, use the default data.csv file.
+  const urlParams = new URLSearchParams(window.location.search);
+  const dataUrl = urlParams.get("data_url");
+  const routesUrl = dataUrl ? dataUrl : "data.csv";
+  const routesPromise = fetch(routesUrl)
     .then((res) => res.text())
     .then((d) => d3.csvParseRows(d, routeParse));
 
