@@ -251,3 +251,8 @@ const renderGlobeVisualization = (
     .arcsData(filteredRoutes)
     .pointOfView(MAP_CENTER, 4000);
 };
+
+window.addEventListener("resize", (event) => {
+  myGlobe.width([event.target.innerWidth]);
+  myGlobe.height([event.target.innerHeight]);
+});
