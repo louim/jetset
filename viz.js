@@ -6,7 +6,7 @@ const toggleButton = document.getElementById("toggleButton");
 
 let currentSegmentIndex = 0;
 let filteredRoutesByTrip = [];
-let showAllRoutes = false;
+let showAllRoutes = true;
 
 const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
   myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
@@ -41,13 +41,22 @@ const handleSegmentChange = (filteredRoutesByTrip, myGlobe) => {
 };
 
 const handleToggleChange = (myGlobe) => {
+  // Toggle between showing all routes and showing one route at a time
   showAllRoutes = !showAllRoutes;
   if (showAllRoutes) {
     myGlobe.arcsData(filteredRoutesByTrip);
+    toggleButton.textContent = "Enable Navigation Mode";
+    toggleButton.classList.remove("error");
+    toggleButton.classList.add("success");
     nextButton.disabled = true;
     prevButton.disabled = true;
   } else {
     myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
+    toggleButton.textContent = "Disable Navigation Mode";
+    toggleButton.classList.remove("success");
+    toggleButton.classList.add("error");
+    nextButton.disabled = false;
+    prevButton.disabled = true;
     handleSegmentChange(filteredRoutesByTrip, myGlobe);
   }
 };
