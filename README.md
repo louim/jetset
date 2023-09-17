@@ -22,3 +22,11 @@ Format:
 - Destination: The IATA code of the destination airport.
 
 © Louis-Michel Couture 2023
+
+## Running locally
+
+Start a web server in the root directory of the project.
+
+```bash
+npx http-server
+```
