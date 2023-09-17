@@ -44,14 +44,22 @@ const handleToggleChange = (myGlobe) => {
   // Toggle between showing all routes and showing one route at a time
   showAllRoutes = !showAllRoutes;
   if (showAllRoutes) {
-    myGlobe.arcsData(filteredRoutesByTrip);
+    // Restore normal behavior
+    myGlobe
+      .arcsData(filteredRoutesByTrip)
+      .arcColor(arcColor)
+      .onArcHover(onArcHover);
     toggleButton.textContent = "Enable Navigation Mode";
     toggleButton.classList.remove("error");
     toggleButton.classList.add("success");
     nextButton.disabled = true;
     prevButton.disabled = true;
   } else {
-    myGlobe.arcsData([filteredRoutesByTrip[currentSegmentIndex]]);
+    // Show one route at a time
+    myGlobe
+      .arcsData([filteredRoutesByTrip[currentSegmentIndex]])
+      .arcColor((d) => [`rgba(0, 255, 0, 1)`, `rgba(255, 0, 0, 1)`])
+      .onArcHover(null);
     toggleButton.textContent = "Disable Navigation Mode";
     toggleButton.classList.remove("success");
     toggleButton.classList.add("error");
@@ -99,6 +107,17 @@ const initializeGlobeVisualization = () => {
     });
 };
 
+const arcColor = (d) => [
+  `rgba(0, 255, 0, ${OPACITY})`,
+  `rgba(255, 0, 0, ${OPACITY})`,
+];
+
+const onArcHover = (hoverArc) =>
+  myGlobe.arcColor((d) => {
+    const op = !hoverArc ? OPACITY : d === hoverArc ? 0.9 : OPACITY / 4;
+    return [`rgba(0, 255, 0, ${op})`, `rgba(255, 0, 0, ${op})`];
+  });
+
 const createGlobeVisualization = () =>
   Globe()(document.getElementById("globeViz"))
     .globeImageUrl("//unpkg.com/three-globe/example/img/earth-night.jpg")
@@ -109,20 +128,12 @@ const createGlobeVisualization = () =>
     .arcEndLat((d) => d.dstAirport.lat)
     .arcEndLng((d) => d.dstAirport.lng)
     .arcAltitudeAutoScale(0.3)
-    .arcColor((d) => [
-      `rgba(0, 255, 0, ${OPACITY})`,
-      `rgba(255, 0, 0, ${OPACITY})`,
-    ])
+    .arcColor(arcColor)
     .arcDashLength(0.4)
     .arcDashGap(0.2)
     .arcStroke(0.4)
     .arcDashAnimateTime(3000)
-    .onArcHover((hoverArc) =>
-      myGlobe.arcColor((d) => {
-        const op = !hoverArc ? OPACITY : d === hoverArc ? 0.9 : OPACITY / 4;
-        return [`rgba(0, 255, 0, ${op})`, `rgba(255, 0, 0, ${op})`];
-      })
-    )
+    .onArcHover(onArcHover)
     .pointColor(() => "orange")
     .pointAltitude(0)
     .pointRadius(0.1)
